@@ -2,6 +2,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QNetworkProxyFactory>
+#include <QFile>
 
 #include <qjson/parser.h>
 #include <qjson/qobjecthelper.h>
@@ -23,12 +24,11 @@ QString Subsonic::urlBuilder(QString method, ArgMap args)
 }
 
 Subsonic::Subsonic(QString server, QObject *parent)
-	:mServer(server), QObject(parent)
+	:QObject(parent), mServer(server)
 {
 	QNetworkProxyFactory::setUseSystemConfiguration(true);
 
 	networkAccessManager = new QNetworkAccessManager(this);
-
 }
 
 void Subsonic::getMusicFolders()
@@ -69,7 +69,7 @@ void Subsonic::getMusicDirectory(ArtistFolder *folder)
 	QNetworkReply *reply = 0;
 	reply = networkAccessManager->get(request);
 
-	connect(reply,SIGNAL(finished()),this,SLOT(getMusicFoldersReply()));
+	connect(reply,SIGNAL(finished()),this,SLOT(getMusicDirectoryReply()));
 }
 
 void Subsonic::getMusicFoldersReply()
@@ -87,7 +87,7 @@ void Subsonic::getMusicFoldersReply()
 
 	QVariant folders = json.toMap()["subsonic-response"].toMap()["musicFolders"].toMap()["musicFolder"];
 
-	qDebug()<<"folders: "<<folders;
+
 }
 
 void Subsonic::getMusicDirectoryReply()
@@ -114,6 +114,8 @@ void Subsonic::getMusicDirectoryReply()
 		QJson::QObjectHelper::qvariant2qobject(song.toMap(),songObject);
 		songs<<songObject;
 	}
+
+	songsReceived(songs);
 }
 
 void Subsonic::getIndexesReply()
@@ -144,4 +146,41 @@ void Subsonic::getIndexesReply()
 	}
 
 	artistsReceived(artists);
+}
+
+void Subsonic::downloadReply()
+{
+	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+
+	if(!reply) return;
+
+	QByteArray data = reply->readAll();
+
+	QFile file(reply->property("filePath").toString());
+	if(!file.open(QIODevice::WriteOnly))
+	{
+		qDebug()<<"failed to open target file for downloading: "<<file.errorString();
+	}
+
+	qDebug()<<"writing "<<data.count()<<" bytes";
+
+	file.write(data);
+
+	file.close();
+}
+
+void Subsonic::download(SongObject *song, QString filePath)
+{
+	ArgMap args;
+	args["id"] = song->id();
+	QString url = urlBuilder("download", args);
+
+	QNetworkRequest request;
+	request.setUrl(QUrl(url));
+
+	QNetworkReply *reply = 0;
+	reply = networkAccessManager->get(request);
+	reply->setProperty("filePath", filePath);
+
+	connect(reply,SIGNAL(finished()),this,SLOT(downloadReply()));
 }

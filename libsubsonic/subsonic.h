@@ -1,7 +1,6 @@
 #ifndef SUBSONIC_H
 #define SUBSONIC_H
 
-#include "libsubsonic_global.h"
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QMap>
@@ -39,16 +38,18 @@ public:
 //	void getPlaylist();
 //	void createPlaylist();
 //	void deletePlaylist();
-//	void download();
+	void download(SongObject* song, QString filePath);
 //	void stream();
 
 signals:
 	void artistsReceived(QList<ArtistFolder*> artists);
+	void songsReceived(QList<SongObject*> songs);
 
 private slots:
 	void getMusicFoldersReply();
 	void getMusicDirectoryReply();
 	void getIndexesReply();
+	void downloadReply();
 
 private: //methods:
 	QString urlBuilder(QString method,ArgMap args);

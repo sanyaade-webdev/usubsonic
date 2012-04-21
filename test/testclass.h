@@ -16,6 +16,7 @@ signals:
 	
 public slots:
 	void artistFoldersUpdated(QList<ArtistFolder*> artistFolders);
+	void songsUpdated(QList<SongObject*> songs);
 
 private:
 	Subsonic* subsonic;
