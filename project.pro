@@ -1,5 +1,6 @@
 TEMPLATE = subdirs
-SUBDIRS += libsubsonic test
+SUBDIRS += libsubsonic test \
+    subsonic-quick
 CONFIG += ordered
 
 

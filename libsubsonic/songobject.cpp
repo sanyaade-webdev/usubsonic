@@ -1,6 +1,6 @@
 #include "songobject.h"
 
-SongObject::SongObject(QObject *parent) :
+MusicObject::MusicObject(QObject *parent) :
 	QObject(parent)
 {
 }

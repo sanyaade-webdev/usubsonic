@@ -10,7 +10,7 @@ type name() { return m_ ## name; } \
 	private: \
 type m_ ## name;
 
-class SongObject : public QObject
+class MusicObject : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(QString album READ album WRITE setAlbum)
@@ -47,7 +47,7 @@ class SongObject : public QObject
 	AUTOPROPERTY(QString, year, Year)
 
 public:
-	explicit SongObject(QObject *parent = 0);
+	explicit MusicObject(QObject *parent = 0);
 
 signals:
 	

@@ -1,7 +1,6 @@
 #include "testclass.h"
 
 #include <QtDebug>
-#include <QGst/Buffer>
 
 TestClass::TestClass(QObject *parent) :
 	QObject(parent)
@@ -13,21 +12,21 @@ TestClass::TestClass(QObject *parent) :
 
 	subsonic->getIndexes();
 
-	connect(subsonic,SIGNAL(artistsReceived(QList<ArtistFolder*>)),this,
-			SLOT(artistFoldersUpdated(QList<ArtistFolder*>)));
+	connect(subsonic,SIGNAL(artistsReceived(QList<IndexFolder*>)),this,
+			SLOT(artistFoldersUpdated(QList<IndexFolder*>)));
 
-	connect(subsonic, SIGNAL(songsReceived(QList<SongObject*>)), this,
-			SLOT(songsUpdated(QList<SongObject*>)));
+	connect(subsonic, SIGNAL(songsReceived(QList<MusicObject*>)), this,
+			SLOT(songsUpdated(QList<MusicObject*>)));
 }
 
-void TestClass::artistFoldersUpdated(QList<ArtistFolder *> artistFolders)
+void TestClass::artistFoldersUpdated(QList<IndexFolder *> artistFolders)
 {
 	Q_ASSERT(artistFolders.count());
 
-	subsonic->getMusicDirectory(artistFolders.at(0));
+	subsonic->getMusicDirectory(artistFolders.at(0)->id());
 }
 
-void TestClass::songsUpdated(QList<SongObject *> songs)
+void TestClass::songsUpdated(QList<MusicObject *> songs)
 {
 	Q_ASSERT(songs.count());
 

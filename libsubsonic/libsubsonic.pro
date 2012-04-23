@@ -5,7 +5,7 @@
 TEMPLATE = lib
 TARGET = subsonic
 
-QT += network
+QT += network declarative
 
 CONFIG += link_pkgconfig
 PKGCONFIG += QJson
@@ -14,5 +14,11 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += artistfolder.h songobject.h subsonic.h
-SOURCES += artistfolder.cpp songobject.cpp subsonic.cpp
+HEADERS += artistfolder.h songobject.h subsonic.h \
+    subsonicmodel.h
+SOURCES += artistfolder.cpp songobject.cpp subsonic.cpp \
+    subsonicmodel.cpp
+
+target.path = $$INSTALL_ROOT/usr/lib/
+
+INSTALLS += target

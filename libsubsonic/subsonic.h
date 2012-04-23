@@ -31,28 +31,28 @@ public:
 	void getMusicFolders();
 	//void getNowPlaying();
 	void getIndexes();
-	void getMusicDirectory(ArtistFolder* folder);
+	void getMusicDirectory(QString id);
 	void search();
 //	void search2();
 //	void getPlaylists();
 //	void getPlaylist();
 //	void createPlaylist();
 //	void deletePlaylist();
-	void download(SongObject* song, QString filePath);
+	void download(MusicObject* song, QString filePath);
+	void getRandomSongs(int num=10, QString genre="",QString fromYear="", QString toYear="", QString musicFolderId="");
 //	void stream();
 
+	QString urlBuilder(QString method,ArgMap args);
+
 signals:
-	void artistsReceived(QList<ArtistFolder*> artists);
-	void songsReceived(QList<SongObject*> songs);
+	void artistsReceived(QList<IndexFolder*> artists);
+	void songsReceived(QList<MusicObject*> songs);
 
 private slots:
 	void getMusicFoldersReply();
 	void getMusicDirectoryReply();
 	void getIndexesReply();
 	void downloadReply();
-
-private: //methods:
-	QString urlBuilder(QString method,ArgMap args);
 
 private:
 	QNetworkAccessManager* networkAccessManager;

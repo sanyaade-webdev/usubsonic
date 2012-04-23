@@ -57,10 +57,10 @@ void Subsonic::getIndexes()
 	connect(reply,SIGNAL(finished()),this,SLOT(getIndexesReply()));
 }
 
-void Subsonic::getMusicDirectory(ArtistFolder *folder)
+void Subsonic::getMusicDirectory(QString id)
 {
 	ArgMap args;
-	args["id"] = folder->id();
+	args["id"] = id;
 	QString url = urlBuilder("getMusicDirectory", args);
 
 	QNetworkRequest request;
@@ -105,15 +105,17 @@ void Subsonic::getMusicDirectoryReply()
 
 	QVariantList songsList = json.toMap()["subsonic-response"].toMap()["directory"].toMap()["child"].toList();
 
-	QList<SongObject*> songs;
+	QList<MusicObject*> songs;
 
 	foreach(QVariant song, songsList)
 	{
-		SongObject* songObject = new SongObject(this);
+		MusicObject* songObject = new MusicObject(this);
 
 		QJson::QObjectHelper::qvariant2qobject(song.toMap(),songObject);
 		songs<<songObject;
 	}
+
+
 
 	songsReceived(songs);
 }
@@ -131,7 +133,7 @@ void Subsonic::getIndexesReply()
 
 	QVariantList categories = json.toMap()["subsonic-response"].toMap()["indexes"].toMap()["index"].toList();
 
-	QList<ArtistFolder*> artists;
+	QList<IndexFolder*> artists;
 
 	foreach(QVariant artistGroup, categories)
 	{
@@ -139,11 +141,13 @@ void Subsonic::getIndexesReply()
 
 		foreach(QVariant artist, artistsInGroup)
 		{
-			ArtistFolder *artistFolder = new ArtistFolder(this);
+			IndexFolder *artistFolder = new IndexFolder(this);
 			QJson::QObjectHelper::qvariant2qobject(artist.toMap(), artistFolder);
 			artists.append(artistFolder);
 		}
 	}
+
+	qDebug()<<" number of artists: "<<artists.count();
 
 	artistsReceived(artists);
 }
@@ -169,7 +173,7 @@ void Subsonic::downloadReply()
 	file.close();
 }
 
-void Subsonic::download(SongObject *song, QString filePath)
+void Subsonic::download(MusicObject *song, QString filePath)
 {
 	ArgMap args;
 	args["id"] = song->id();
@@ -183,4 +187,28 @@ void Subsonic::download(SongObject *song, QString filePath)
 	reply->setProperty("filePath", filePath);
 
 	connect(reply,SIGNAL(finished()),this,SLOT(downloadReply()));
+}
+
+void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString toYear, QString musicFolderId)
+{
+	ArgMap args;
+	args["size"] = QString::number(num);
+	if(!genre.isEmpty())
+		args["genre"] = genre;
+	if(!fromYear.isEmpty())
+		args["fromYear"] = fromYear;
+	if(!toYear.isEmpty())
+		args["toYear"] = toYear;
+	if(!musicFolderId.isEmpty())
+		args["musicFolderId"] = musicFolderId;
+
+	QString url = urlBuilder("getRandomSongs",args);
+
+	QNetworkRequest request;
+	request.setUrl(QUrl(url));
+
+	QNetworkReply *reply = 0;
+	reply = networkAccessManager->get(request);
+
+	connect(reply,SIGNAL(finished()),this,SLOT(getMusicDirectoryReply()));
 }

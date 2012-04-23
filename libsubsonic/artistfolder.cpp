@@ -1,6 +1,6 @@
 #include "artistfolder.h"
 
-ArtistFolder::ArtistFolder(QObject *parent) :
+IndexFolder::IndexFolder(QObject *parent) :
 	QObject(parent)
 {
 
