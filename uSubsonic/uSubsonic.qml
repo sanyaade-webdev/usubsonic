@@ -23,14 +23,15 @@ Rectangle {
     Audio {
          id: player
          property variant nowPlaying
-         property int index
+         property int index: 0
+
          function playSong( i )
          {
              index = i;
 
-             if(index > songs.count)
+             if(index > songs.count || index < 0)
              {
-                 console.log("ERROR: song index out of range")
+                 console.log("ERROR: song index out of range: " + index)
                  return;
              }
 

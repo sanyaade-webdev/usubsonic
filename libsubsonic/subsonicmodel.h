@@ -85,11 +85,12 @@ private slots:
 
 	void artistsReceived(QList<IndexFolder*> list);
 	void songsReceived(QList<MusicObject*> list);
-
+    void garbageCollect();
 private:
 	Subsonic* subsonic;
 	QList<MusicObject*> mSongs;
 	QList<IndexFolder*> mArtists;
+    QList<QObject*> garbage;
 };
 
 #endif // SUBSONICMODEL_H

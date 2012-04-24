@@ -3,6 +3,7 @@
 #include "songobject.h"
 
 #include <QtDebug>
+#include <QTimer>
 
 SubsonicModel::SubsonicModel(QObject *parent) :
 	QObject(parent)
@@ -57,8 +58,10 @@ void SubsonicModel::artistsReceived(QList<IndexFolder *> list)
 	foreach(IndexFolder* obj, mArtists)
 	{
 		///clean up old songs list:
-		obj->deleteLater();
+        garbage<<obj;
 	}
+
+    QTimer::singleShot(1000,this,SLOT(garbageCollect()));
 
 	mArtists = list;
 	indexChanged();
@@ -71,11 +74,23 @@ void SubsonicModel::songsReceived(QList<MusicObject *> list)
 	foreach(MusicObject* obj, mSongs)
 	{
 		///clean up old songs list:
-		obj->deleteLater();
+        garbage<<obj;
 	}
 
+    QTimer::singleShot(1000,this,SLOT(garbageCollect()));
+
 	mSongs = list;
-	songsChanged();
+    songsChanged();
+}
+
+void SubsonicModel::garbageCollect()
+{
+    foreach(QObject* obj, garbage)
+    {
+        ///clean up list:
+        garbage.removeAll(obj);
+        delete obj;
+    }
 }
 
 QString SubsonicModel::streamUrl(MusicObject *song)
