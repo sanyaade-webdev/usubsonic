@@ -9,8 +9,10 @@ Rectangle {
     height: 480
     color: "black"
 
-    property variant artists: subsonic.index;
-    property variant songs: subsonic.songs;
+    property variant player: playerItem
+
+    property alias artists: subsonic.index;
+    property alias songs: subsonic.songs;
 
     SubsonicModel {
         id: subsonic
@@ -21,7 +23,7 @@ Rectangle {
     }
 
     Audio {
-         id: player
+         id: playerItem
          property variant nowPlaying
          property int index: 0
 
@@ -36,15 +38,15 @@ Rectangle {
              }
 
              var song = songs[index];
-             player.source = subsonic.streamUrl(song);
-             player.nowPlaying = song;
-             player.play();
+             playerItem.source = subsonic.streamUrl(song);
+             playerItem.nowPlaying = song;
+             playerItem.play();
          }
 
          onStatusChanged: {
-             if(player.status == Audio.EndOfMedia) {
+             if(playerItem.status == Audio.EndOfMedia) {
                  index ++;
-                 player.playSong(index)
+                 playerItem.playSong(index)
              }
          }
     }
@@ -114,7 +116,7 @@ Rectangle {
                             subsonic.getMusicObjectsForId(modelData.id)
                         }
                         else if(!modelData.isVideo) {
-                            player.playSong(model.index)
+                            playerItem.playSong(model.index)
                         }
 
                         musicList.songs = true;
@@ -136,7 +138,7 @@ Rectangle {
                 source: "star.png"
                 lifeSpan: 15000
                 lifeSpanDeviation: 5000
-                count: 100 * (player.position / player.duration)
+                count: 200 * (playerItem.position / playerItem.duration)
                 angle: 70
                 angleDeviation: 36
                 velocity: 30
@@ -148,39 +150,86 @@ Rectangle {
             }
 
             Row {
-                Image {
+                height: childrenRect.height
+                x: 20
+                Rectangle {
+                    id: coverArt
+                    property string fadeColor : "#OOOOOO"
+                    property string source: subsonic.albumArtUrl(playerItem.nowPlaying);
+                    property real reflectionRatio: 0.3
 
-                    fillMode: Image.PreserveAspectFit
-                    source: subsonic.albumArtUrl(player.nowPlaying);
-                    sourceSize.width: nowplaying.width / 3
-                    width: nowplaying.width / 3
+                    height: originalImage.height * (1 + reflectionRatio)
+                    width: originalImage.width
+                    color: "transparent"
+                    clip: true
+
+                    Image {
+                        id: originalImage
+                        fillMode: Image.PreserveAspectFit
+                        source: coverArt.source
+                        //sourceSize.width: nowplaying.width / 3
+                        width: nowplaying.width / 3
+                    }
+
+                    Image {
+                        id: reflectedImage
+
+                        anchors.top: originalImage.bottom
+                        source: coverArt.source
+                        width: originalImage.width
+                        fillMode: Image.PreserveAspectFit
+                        transform: Rotation {
+                            origin.x: reflectedImage.width / 2
+                            origin.y: reflectedImage.height / 2
+                            axis.x: 1; axis.y: 0; axis.z: 0
+                            angle: 180
+                        }
+                    }
+
+                    Rectangle {
+                        anchors.top: originalImage.bottom
+                        width:  originalImage.width
+                        height: originalImage.height * coverArt.reflectionRatio
+
+                        gradient: Gradient {
+
+                            GradientStop {
+                                position: 0.0
+                                color: "#00" + coverArt.fadeColor.substring(1)
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: "#FF" + coverArt.fadeColor.substring(1)
+                            }
+                        }
+                    }
                 }
 
                 Column {
 
                     Text {
-                        text: player.nowPlaying.title
+                        text: playerItem.nowPlaying.title
                         font.pixelSize: 30
                         color: "white"
                     }
 
                     Text {
-                        text: "Artist: " + player.nowPlaying.artist
+                        text: "Artist: " + playerItem.nowPlaying.artist
                         color: "white"
                     }
 
                     Text {
-                        text: "Album: " + player.nowPlaying.album
+                        text: "Album: " + playerItem.nowPlaying.album
                         color: "white"
                     }
 
                     Text {
-                        text: "Genre: " + player.nowPlaying.genre
+                        text: "Genre: " + playerItem.nowPlaying.genre
                         color: "white"
                     }
 
                     Text {
-                        text: "Bitrate: " + player.nowPlaying.bitRate
+                        text: "Bitrate: " + playerItem.nowPlaying.bitRate
                         color: "white"
                     }
 
@@ -200,7 +249,7 @@ Rectangle {
         source: "bottom_bar.png"
 
         Text {
-            text: player.nowPlaying.title + " - " + player.nowPlaying.artist + " - "  + player.nowPlaying.album
+            text: playerItem.nowPlaying.title + " - " + playerItem.nowPlaying.artist + " - "  + playerItem.nowPlaying.album
             y: 5
             anchors.horizontalCenter: bottomToolbar.horizontalCenter
             color: "white"
@@ -238,7 +287,7 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        player.playSong(player.index-1)
+                        playerItem.playSong(playerItem.index-1)
                     }
                 }
             }
@@ -246,15 +295,15 @@ Rectangle {
             Image {
                 id: playPauseButton
 
-                source: player.paused || !player.playing ? "media_play.png":"pause.png"
+                source: playerItem.paused || !playerItem.playing ? "media_play.png":"pause.png"
                 y: 5
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if(!player.paused)
-                            player.pause();
-                        else player.play();
+                        if(!playerItem.paused)
+                            playerItem.pause();
+                        else playerItem.play();
                     }
                 }
             }
@@ -268,7 +317,7 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        player.playSong(player.index+1)
+                        playerItem.playSong(playerItem.index+1)
                     }
                 }
             }
@@ -287,7 +336,7 @@ Rectangle {
                 Image {
                     id: bufferProgress
                     anchors.verticalCenter: parent.verticalCenter
-                    width: (parent.width) * player.bufferProgress
+                    width: (parent.width) * playerItem.bufferProgress
                     source: "progress_filler.png"
                     opacity: 0.25
                     x: 3
@@ -302,7 +351,7 @@ Rectangle {
                     id: progress
                     anchors.verticalCenter: parent.verticalCenter
                     x: 3
-                    width: (parent.width) * (player.position / player.duration)
+                    width: (parent.width) * (playerItem.position / playerItem.duration)
                     source: "progress_filler.png"
 
                     Behavior on width {

@@ -88,8 +88,9 @@ void SubsonicModel::garbageCollect()
     foreach(QObject* obj, garbage)
     {
         ///clean up list:
-        garbage.removeAll(obj);
-        delete obj;
+		garbage.removeAll(obj);
+		qDebug()<<"garbage collecting";
+		delete obj;
     }
 }
 
