@@ -9,7 +9,7 @@ Rectangle {
     height: 480
     color: "black"
 
-    property variant player: playerItem
+    property alias player: playerItem
 
     property alias artists: subsonic.index;
     property alias songs: subsonic.songs;
@@ -40,13 +40,15 @@ Rectangle {
              var song = songs[index];
              playerItem.source = subsonic.streamUrl(song);
              playerItem.nowPlaying = song;
-             playerItem.play();
          }
 
          onMediaStatusChanged: {
              if(playerItem.status === SubsonicMediaPlayer.EndOfMedia) {
                  index ++;
                  playerItem.playSong(index)
+             }
+             else if(playerItem.status == Audio.Buffered || playerItem.status == Audio.Loaded) {
+                 playerItem.play();
              }
          }
     }
@@ -249,9 +251,16 @@ Rectangle {
         source: "bottom_bar.png"
 
         Text {
-            text: playerItem.nowPlaying.title + " - " + playerItem.nowPlaying.artist + " - "  + playerItem.nowPlaying.album
+            text: playerItem.nowPlaying ? playerItem.nowPlaying.title + " - " + playerItem.nowPlaying.artist + " - "  + playerItem.nowPlaying.album : ""
             y: 5
             anchors.horizontalCenter: bottomToolbar.horizontalCenter
+            color: "white"
+        }
+
+        Text {
+            text: "Player status: " + playerItem.status
+            y: 5
+            anchors.left: bottomToolbar.left
             color: "white"
         }
 

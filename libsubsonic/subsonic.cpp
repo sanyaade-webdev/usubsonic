@@ -154,6 +154,9 @@ void Subsonic::getIndexesReply()
 
 void Subsonic::downloadReply()
 {
+	if(!downloadQueue.isEmpty())
+		downloadQueue.takeFirst();
+
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
 	if(!reply) return;
@@ -173,6 +176,11 @@ void Subsonic::downloadReply()
 	file.close();
 }
 
+void Subsonic::downloadProgress(quint64, quint64)
+{
+
+}
+
 void Subsonic::download(MusicObject *song, QString filePath)
 {
 	ArgMap args;
@@ -186,7 +194,11 @@ void Subsonic::download(MusicObject *song, QString filePath)
 	reply = networkAccessManager->get(request);
 	reply->setProperty("filePath", filePath);
 
+	downloadQueue.append(song);
+
 	connect(reply,SIGNAL(finished()),this,SLOT(downloadReply()));
+	connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,
+			SLOT())
 }
 
 void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString toYear, QString musicFolderId)

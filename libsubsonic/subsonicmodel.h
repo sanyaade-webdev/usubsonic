@@ -9,6 +9,12 @@
 #include "artistfolder.h"
 #include "subsonic.h"
 
+#define AUTOSETTING(type, name, Name) \
+public: \
+	void set ## Name(type s) { QSettings settings; settings.setValue(""#name"",s); } \
+	type name() { QSettings s; return s.value(""#name"").value<type>(); } \
+
+
 class SubsonicModel : public QObject
 {
 	Q_OBJECT
@@ -17,6 +23,8 @@ class SubsonicModel : public QObject
 	Q_PROPERTY(QString serverUrl READ serverUrl WRITE setServerUrl)
 	Q_PROPERTY(QString username READ username WRITE setUsername)
 	Q_PROPERTY(QString password READ password WRITE setPassword)
+	Q_PROPERTY(int songCache READ songCache WRITE setSongCache)
+	AUTOSETTING(int, songCache, SongCache)
 
 public:
 	explicit SubsonicModel(QObject *parent = 0);
@@ -68,6 +76,8 @@ signals:
 	void songsChanged();
 	void indexChanged();
 
+	void downloadProgress(MusicObject* song, double progress);
+
 public slots:
 	void connect();
 	void getRandomSongs(int num=10, QString genre="", QString fromYear="", QString toYear="", QString musicFolderId="");
@@ -77,6 +87,7 @@ public slots:
 	QList<IndexFolder*> artists() { return mArtists; }
 
 	QString streamUrl(MusicObject* song);
+	QString downloadUrl(MusicObject* song);
 	QString albumArtUrl(MusicObject* song);
 
 	void refresh();
