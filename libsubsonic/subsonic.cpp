@@ -212,3 +212,15 @@ void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString 
 
 	connect(reply,SIGNAL(finished()),this,SLOT(getMusicDirectoryReply()));
 }
+
+QNetworkRequest Subsonic::stream(MusicObject* song)
+{
+	ArgMap args;
+	args["id"] = song->id();
+	QString url = urlBuilder("stream", args);
+
+	QNetworkRequest request;
+	request.setUrl(QUrl(url));
+
+	return request;
+}
