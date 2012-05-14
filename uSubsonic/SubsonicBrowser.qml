@@ -40,17 +40,14 @@ Rectangle {
              var song = songs[index];
              playerItem.source = subsonic.streamUrl(song);
              playerItem.nowPlaying = song;
-             //console.log("Now playing index: " + (playerItem.index) + " - " + playerItem.nowPlaying.title);
          }
 
          onMediaStatusChanged: {
-             //console.log("=========Media status changed: " + mediaStatus);
-             //console.log("=========Player state: " + state)
-             if(playerItem.mediaStatus === SubsonicMediaPlayer.EndOfMedia) {
-                 //console.log("END OF MEDIA REACHED");
-                 playerItem.playSong(++playerItem.index);
+             if(playerItem.status === SubsonicMediaPlayer.EndOfMedia) {
+                 index ++;
+                 playerItem.playSong(index)
              }
-             else if(playerItem.mediaStatus === SubsonicMediaPlayer.Buffered || playerItem.mediaStatus === SubsonicMediaPlayer.LoadedMedia) {
+             else if(playerItem.status == Audio.Buffered || playerItem.status == Audio.Loaded) {
                  playerItem.play();
              }
          }
@@ -102,7 +99,7 @@ Rectangle {
                         height: parent.height
                         sourceSize.height: height
                         fillMode: Image.PreserveAspectFit
-                        source: modelData.coverArt ? subsonic.albumArtUrl(modelData) : ""
+                        source: modelData.coverArt ? subsonic.albumArtUrl(modelData):""
                     }
 
                     Text {
@@ -143,7 +140,7 @@ Rectangle {
                 source: "star.png"
                 lifeSpan: 15000
                 lifeSpanDeviation: 5000
-                count: 200 * (playerItem.position / (playerItem.nowPlaying.duration * 1000))
+                count: 200 * (playerItem.position / playerItem.duration)
                 angle: 70
                 angleDeviation: 36
                 velocity: 30
@@ -260,13 +257,12 @@ Rectangle {
             color: "white"
         }
 
-        /*Text {
-            text: "Player position: " + playerItem.position + "/" + playerItem.nowPlaying.duration * 1000
+        Text {
+            text: "Player status: " + playerItem.status
             y: 5
-            x: 100
             anchors.left: bottomToolbar.left
             color: "white"
-        }*/
+        }
 
         Row {
             height: parent.height
@@ -308,13 +304,13 @@ Rectangle {
             Image {
                 id: playPauseButton
 
-                source: playerItem.state === SubsonicMediaPlayer.PausedState || playerItem.state ===SubsonicMediaPlayer.StoppedState? "media_play.png":"pause.png"
+                source: playerItem.paused || !playerItem.playing ? "media_play.png":"pause.png"
                 y: 5
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if(playerItem.state === SubsonicMediaPlayer.PlayingState)
+                        if(!playerItem.paused)
                             playerItem.pause();
                         else playerItem.play();
                     }
@@ -349,13 +345,13 @@ Rectangle {
                 Image {
                     id: bufferProgress
                     anchors.verticalCenter: parent.verticalCenter
-                    width: (parent.width) * playerItem.bufferStatus
+                    width: (parent.width) * playerItem.bufferProgress
                     source: "progress_filler.png"
                     opacity: 0.25
                     x: 3
 
                     Behavior on width {
-                        NumberAnimation { duration: 1000 }
+                        NumberAnimation { duration: 500 }
                     }
 
                 }
@@ -364,11 +360,11 @@ Rectangle {
                     id: progress
                     anchors.verticalCenter: parent.verticalCenter
                     x: 3
-                    width: playerItem.nowPlaying ? (parent.width) * (playerItem.position / (playerItem.nowPlaying.duration * 1000)) : 0
+                    width: (parent.width) * (playerItem.position / playerItem.duration)
                     source: "progress_filler.png"
 
                     Behavior on width {
-                        NumberAnimation { duration: 1000 }
+                        NumberAnimation { duration: 500 }
                     }
                 }
             }
