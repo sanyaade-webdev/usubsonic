@@ -6,8 +6,8 @@
 class IndexFolder : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString id READ id WRITE setId)
-	Q_PROPERTY(QString name READ name WRITE setName)
+	Q_PROPERTY(QString id READ id WRITE setId NOTIFY changed)
+	Q_PROPERTY(QString name READ name WRITE setName NOTIFY changed)
 public:
 	explicit IndexFolder(QObject *parent = 0);
 	void setId(QString i) { mId = i; }
@@ -15,6 +15,9 @@ public:
 
 	void setName(QString n) { mName = n; }
 	QString name() { return mName; }
+
+signals:
+	void changed();
 
 private:
 	QString mId;

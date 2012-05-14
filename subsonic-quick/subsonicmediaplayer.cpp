@@ -3,7 +3,7 @@
 #include <QUrl>
 
 SubsonicMediaPlayer::SubsonicMediaPlayer(QObject *parent) :
-	QMediaPlayer(parent)
+	QMediaPlayer(parent, QMediaPlayer::StreamPlayback)
 {
 
 }

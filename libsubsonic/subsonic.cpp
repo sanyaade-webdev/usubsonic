@@ -18,8 +18,6 @@ QString Subsonic::urlBuilder(QString method, ArgMap args)
 		url+=QString("&%1=%2").arg(key).arg(args[key]);
 	}
 
-	qDebug()<<"built url: "<<url;
-
 	return url;
 }
 
@@ -198,7 +196,7 @@ void Subsonic::download(MusicObject *song, QString filePath)
 
 	connect(reply,SIGNAL(finished()),this,SLOT(downloadReply()));
 	connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,
-			SLOT())
+			SLOT(downloadProgress(quint64,quint64)));
 }
 
 void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString toYear, QString musicFolderId)
