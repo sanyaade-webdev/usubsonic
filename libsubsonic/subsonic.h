@@ -53,10 +53,8 @@ private slots:
 	void getMusicDirectoryReply();
 	void getIndexesReply();
 	void downloadReply();
-	void downloadProgress(quint64, quint64);
 
 private:
-	QList<MusicObject*> downloadQueue;
 	QNetworkAccessManager* networkAccessManager;
 	QString mServer;
 	QString mUsername;
