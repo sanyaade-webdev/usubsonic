@@ -40,7 +40,7 @@ public:
 //	void deletePlaylist();
 	void download(MusicObject* song, QString filePath);
 	void getRandomSongs(int num=10, QString genre="",QString fromYear="", QString toYear="", QString musicFolderId="");
-	QNetworkRequest stream(MusicObject* song);
+//	void stream();
 
 	QString urlBuilder(QString method,ArgMap args);
 

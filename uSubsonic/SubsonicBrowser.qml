@@ -22,7 +22,7 @@ Rectangle {
         }
     }
 
-    SubsonicMediaPlayer {
+    Audio {
          id: playerItem
          property variant nowPlaying
          property int index: 0
@@ -43,8 +43,8 @@ Rectangle {
              playerItem.play();
          }
 
-         onMediaStatusChanged: {
-             if(playerItem.status === SubsonicMediaPlayer.EndOfMedia) {
+         onStatusChanged: {
+             if(playerItem.status == Audio.EndOfMedia) {
                  index ++;
                  playerItem.playSong(index)
              }

@@ -117,8 +117,3 @@ QString SubsonicModel::albumArtUrl(MusicObject *song)
 
 	return "";
 }
-
-void SubsonicModel::refresh()
-{
-
-}
