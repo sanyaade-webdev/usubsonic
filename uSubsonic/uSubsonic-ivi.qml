@@ -14,7 +14,7 @@ import nobdy 0.1
                 player.pause();
             else if(vehicleState.value === 1)
                 player.play();
-        }89.0089.0089.0089.0089.00000000
+        }
     }
 }
 r
