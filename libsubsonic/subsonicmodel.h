@@ -79,7 +79,7 @@ public slots:
 	QString streamUrl(MusicObject* song);
 	QString albumArtUrl(MusicObject* song);
 
-	void refresh();
+        //void refresh();
 
 private slots:
 

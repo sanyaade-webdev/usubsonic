@@ -5,10 +5,10 @@
 TestClass::TestClass(QObject *parent) :
 	QObject(parent)
 {
-	subsonic = new Subsonic("http://67.189.97.36:40080");
+	subsonic = new Subsonic("http://tripzero.subsonic.org");
 
-	subsonic->setUsername("test");
-	subsonic->setPassword("test");
+	subsonic->setUsername("mobile");
+	subsonic->setPassword("mobile");
 
 	subsonic->getIndexes();
 

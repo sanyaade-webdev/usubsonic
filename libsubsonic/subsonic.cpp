@@ -78,6 +78,21 @@ void Subsonic::getMusicFoldersReply()
 
 	if(!reply) return;
 
+	QVariant possibleRedirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+	qDebug()<<"is redirect? "<<possibleRedirectUrl;
+
+	if(!possibleRedirectUrl.toUrl().isEmpty())
+	{
+		qDebug()<<"we got redirected to: "<<possibleRedirectUrl.toUrl().toString();
+		reply->deleteLater();
+		reply = networkAccessManager->get(QNetworkRequest(possibleRedirectUrl.toUrl()));
+
+		connect(reply,SIGNAL(finished()),this,SLOT(getMusicFoldersReply()));
+
+		return;
+	}
+
 	QString data = reply->readAll();
 
 	qDebug()<<"reply: "<<data;
@@ -95,6 +110,21 @@ void Subsonic::getMusicDirectoryReply()
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
 	if(!reply) return;
+
+	QVariant possibleRedirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+	qDebug()<<"is redirect? "<<possibleRedirectUrl;
+
+	if(!possibleRedirectUrl.toUrl().isEmpty())
+	{
+		qDebug()<<"we got redirected to: "<<possibleRedirectUrl.toUrl().toString();
+		reply->deleteLater();
+		reply = networkAccessManager->get(QNetworkRequest(possibleRedirectUrl.toUrl()));
+
+		connect(reply,SIGNAL(finished()),this,SLOT(getMusicDirectoryReply()));
+
+		return;
+	}
 
 	QString data = reply->readAll();
 
@@ -125,6 +155,21 @@ void Subsonic::getIndexesReply()
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
 	if(!reply) return;
+
+	QVariant possibleRedirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+	qDebug()<<"is redirect? "<<possibleRedirectUrl;
+
+	if(!possibleRedirectUrl.toUrl().isEmpty())
+	{
+		qDebug()<<"we got redirected to: "<<possibleRedirectUrl.toUrl().toString();
+		reply->deleteLater();
+		reply = networkAccessManager->get(QNetworkRequest(possibleRedirectUrl.toUrl()));
+
+		connect(reply,SIGNAL(finished()),this,SLOT(getIndexesReply()));
+
+		return;
+	}
 
 	QString data = reply->readAll();
 
@@ -157,6 +202,21 @@ void Subsonic::downloadReply()
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
 	if(!reply) return;
+
+	QVariant possibleRedirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+	qDebug()<<"is redirect? "<<possibleRedirectUrl;
+
+	if(!possibleRedirectUrl.toUrl().isEmpty())
+	{
+		qDebug()<<"we got redirected to: "<<possibleRedirectUrl.toUrl().toString();
+		reply->deleteLater();
+		reply = networkAccessManager->get(QNetworkRequest(possibleRedirectUrl.toUrl()));
+
+		connect(reply,SIGNAL(finished()),this,SLOT(downloadReply()));
+
+		return;
+	}
 
 	QByteArray data = reply->readAll();
 
