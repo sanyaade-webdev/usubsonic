@@ -67,6 +67,7 @@ private:
 	QString mPassword;
 
 	int bufferProgress;
+	QString mCurrentDownloadFilename;
 };
 
 #endif // SUBSONIC_H

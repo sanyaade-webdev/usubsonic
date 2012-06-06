@@ -45,7 +45,7 @@ Rectangle {
              }
 
              var song = songs[index];
-             playerItem.source = subsonic.streamUrl(song);
+             playerItem.source = subsonic.bufferSong(song);
              playerItem.nowPlaying = song;
 			 //playerItem.play();
          }

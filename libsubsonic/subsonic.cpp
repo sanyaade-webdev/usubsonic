@@ -201,14 +201,15 @@ void Subsonic::getIndexesReply()
 
 void Subsonic::downloadReply()
 {
+	qDebug()<<__FUNCTION__;
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
 	if(!reply) return;
 
 	QByteArray data = reply->readAll();
 
-	QFile file(reply->property("filePath").toString());
-	if(!file.open(QIODevice::WriteOnly | QIODevice::Append))
+	QFile file(mCurrentDownloadFilename);
+	if(!file.open(QIODevice:: QIODevice::WriteOnly | QIODevice::Append))
 	{
 		qDebug()<<"failed to open target file for downloading: "<<file.errorString();
 	}
@@ -221,21 +222,25 @@ void Subsonic::downloadReply()
 }
 
 void Subsonic::download(MusicObject *song, QString filePath)
-{
+{   
 	ArgMap args;
 	args["id"] = song->id();
 	QString url = urlBuilder("download", args);
+
+	qDebug()<<"downloading: "<<filePath;
 
 	QNetworkRequest request;
 	request.setUrl(QUrl(url));
 
 	QNetworkReply *reply = 0;
 	reply = networkAccessManager->get(request);
-	reply->setProperty("filePath", filePath);
+	mCurrentDownloadFilename = filePath;
 
 	connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
 	connect(reply,SIGNAL(readyRead()),this,SLOT(downloadReply()));
 	connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(downloadProgress(qint64,qint64)));
+
+	qDebug()<<__FUNCTION__<<" finished";
 }
 
 void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString toYear, QString musicFolderId)
@@ -264,6 +269,7 @@ void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString 
 
 void Subsonic::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
+	qDebug()<<"downloaded: "<<bytesReceived<<" of "<<bytesTotal;
 	bufferProgress = (bytesTotal / bytesReceived) * 100;
 	downloadBufferChanged(bufferProgress);
 }
