@@ -102,7 +102,7 @@ void Subsonic::getMusicFoldersReply()
 
 	QVariant folders = json.toMap()["subsonic-response"].toMap()["musicFolders"].toMap()["musicFolder"];
 
-	delete reply;
+	reply->deleteLater();
 }
 
 void Subsonic::getMusicDirectoryReply()
@@ -145,9 +145,9 @@ void Subsonic::getMusicDirectoryReply()
 		songs<<songObject;
 	}
 
-	delete reply;
-
 	songsReceived(songs);
+
+	reply->deleteLater();
 }
 
 void Subsonic::getIndexesReply()
@@ -196,7 +196,7 @@ void Subsonic::getIndexesReply()
 
 	artistsReceived(artists);
 
-	delete reply;
+	reply->deleteLater();
 }
 
 void Subsonic::downloadReply()
@@ -297,5 +297,5 @@ void Subsonic::downloadFinished()
 		return;
 	}
 
-	delete reply;
+	reply->deleteLater();
 }
