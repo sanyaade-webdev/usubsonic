@@ -65,7 +65,7 @@ public:
 		settings.setValue("password",v);
 	}
 
-	int buffer() { return subsonic->getBufferProgress(); }
+	int buffer() { return subsonic ? subsonic->getBufferProgress():0; }
 
 signals:
 	void songsChanged();

@@ -20,6 +20,13 @@ Rectangle {
         Component.onCompleted: {
             subsonic.connect();
         }
+
+		onBufferProgressChanged: {
+			if(subsonic.bufferProgress > 50)
+			{
+				playerItem.play();
+			}
+		}
     }
 
     Audio {
@@ -40,20 +47,8 @@ Rectangle {
              var song = songs[index];
              playerItem.source = subsonic.streamUrl(song);
              playerItem.nowPlaying = song;
-             playerItem.play();
+			 //playerItem.play();
          }
-
-		 Connections {
-			 target: subsonic
-
-			 onBufferProgressChanged: {
-				 if(subsonic.bufferProgress > 50)
-				 {
-					 playerItem.play();
-				 }
-			 }
-
-		 }
 
          onStatusChanged: {
              if(playerItem.status == Audio.EndOfMedia) {

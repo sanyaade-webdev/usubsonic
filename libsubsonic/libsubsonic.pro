@@ -7,7 +7,7 @@ TARGET = subsonic
 
 QT += network declarative
 
-CONFIG += link_pkgconfig
+CONFIG += link_pkgconfig debug
 PKGCONFIG += QJson
 
 DEPENDPATH += .
