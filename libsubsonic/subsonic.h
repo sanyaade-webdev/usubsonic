@@ -57,6 +57,7 @@ private slots:
 	void getMusicDirectoryReply();
 	void getIndexesReply();
 	void downloadReply();
+	void downloadFinished();
 	void downloadProgress(qint64,qint64);
 
 private:

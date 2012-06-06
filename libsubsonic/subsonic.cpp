@@ -102,7 +102,7 @@ void Subsonic::getMusicFoldersReply()
 
 	QVariant folders = json.toMap()["subsonic-response"].toMap()["musicFolders"].toMap()["musicFolder"];
 
-
+	delete reply;
 }
 
 void Subsonic::getMusicDirectoryReply()
@@ -145,7 +145,7 @@ void Subsonic::getMusicDirectoryReply()
 		songs<<songObject;
 	}
 
-
+	delete reply;
 
 	songsReceived(songs);
 }
@@ -195,6 +195,8 @@ void Subsonic::getIndexesReply()
 	qDebug()<<" number of artists: "<<artists.count();
 
 	artistsReceived(artists);
+
+	delete reply;
 }
 
 void Subsonic::downloadReply()
@@ -202,21 +204,6 @@ void Subsonic::downloadReply()
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
 	if(!reply) return;
-
-	QVariant possibleRedirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-
-	qDebug()<<"is redirect? "<<possibleRedirectUrl;
-
-	if(!possibleRedirectUrl.toUrl().isEmpty())
-	{
-		qDebug()<<"we got redirected to: "<<possibleRedirectUrl.toUrl().toString();
-		reply->deleteLater();
-		reply = networkAccessManager->get(QNetworkRequest(possibleRedirectUrl.toUrl()));
-
-		connect(reply,SIGNAL(finished()),this,SLOT(downloadReply()));
-
-		return;
-	}
 
 	QByteArray data = reply->readAll();
 
@@ -246,6 +233,7 @@ void Subsonic::download(MusicObject *song, QString filePath)
 	reply = networkAccessManager->get(request);
 	reply->setProperty("filePath", filePath);
 
+	connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
 	connect(reply,SIGNAL(readyRead()),this,SLOT(downloadReply()));
 	connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(downloadProgress(qint64,qint64)));
 }
@@ -278,4 +266,30 @@ void Subsonic::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
 	bufferProgress = (bytesTotal / bytesReceived) * 100;
 	downloadBufferChanged(bufferProgress);
+}
+
+void Subsonic::downloadFinished()
+{
+	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+
+	if(!reply) return;
+
+	QVariant possibleRedirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+	qDebug()<<"is redirect? "<<possibleRedirectUrl;
+
+	if(!possibleRedirectUrl.toUrl().isEmpty())
+	{
+		qDebug()<<"we got redirected to: "<<possibleRedirectUrl.toUrl().toString();
+		reply->deleteLater();
+		reply = networkAccessManager->get(QNetworkRequest(possibleRedirectUrl.toUrl()));
+
+		connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
+		connect(reply,SIGNAL(readyRead()),this,SLOT(downloadReply()));
+		connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(downloadProgress(qint64,qint64)));
+
+		return;
+	}
+
+	delete reply;
 }

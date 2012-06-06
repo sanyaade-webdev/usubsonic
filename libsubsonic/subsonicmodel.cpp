@@ -123,7 +123,9 @@ QString SubsonicModel::albumArtUrl(MusicObject *song)
 
 QString SubsonicModel::bufferSong(MusicObject *song)
 {
-	QString filename = QDir::homePath() + "/Music/" + song->title();
+	QString filename = QDir::homePath() + "/Music/" + song->title() + ".mp3";
 
 	subsonic->download(song,filename);
+
+	return filename;
 }
