@@ -18,6 +18,7 @@ class SubsonicModel : public QObject
 	Q_PROPERTY(QString username READ username WRITE setUsername)
 	Q_PROPERTY(QString password READ password WRITE setPassword)
 	Q_PROPERTY(int bufferProgress READ buffer NOTIFY bufferChanged)
+	Q_PROPERTY(bool songDownloaded READ songDownloaded NOTIFY songDownloadedChanged)
 
 public:
 	explicit SubsonicModel(QObject *parent = 0);
@@ -66,11 +67,13 @@ public:
 	}
 
 	int buffer() { return subsonic ? subsonic->getBufferProgress():0; }
+	bool songDownloaded() { return mSongDownloaded; }
 
 signals:
 	void songsChanged();
 	void indexChanged();
 	void bufferChanged(int);
+	void songDownloadedChanged();
 
 public slots:
 	void connect();
@@ -97,6 +100,8 @@ private:
 	QList<MusicObject*> mSongs;
 	QList<IndexFolder*> mArtists;
     QList<QObject*> garbage;
+
+	bool mSongDownloaded;
 };
 
 #endif // SUBSONICMODEL_H

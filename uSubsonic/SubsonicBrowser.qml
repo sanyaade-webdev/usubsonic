@@ -22,8 +22,10 @@ Rectangle {
         }
 
 		onBufferProgressChanged: {
-			if(subsonic.bufferProgress > 50)
+            if(subsonic.bufferProgress > 50 && !playerItem.playing)
 			{
+                console.log("50% buffered. now playing?" + playerItem.playing)
+                playerItem.source = playerItem.filename
 				playerItem.play();
 			}
 		}
@@ -33,6 +35,7 @@ Rectangle {
          id: playerItem
          property variant nowPlaying
          property int index: 0
+         property string filename:""
 
          function playSong( i )
          {
@@ -45,7 +48,14 @@ Rectangle {
              }
 
              var song = songs[index];
-             playerItem.source = subsonic.bufferSong(song);
+             playerItem.filename = subsonic.bufferSong(song);
+
+             if(subsonic.songDownloaded)
+             {
+                 playerItem.source = playerItem.filename
+                 playerItem.play();
+             }
+
              playerItem.nowPlaying = song;
 			 //playerItem.play();
          }

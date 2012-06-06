@@ -3,6 +3,7 @@
 #include <QNetworkRequest>
 #include <QNetworkProxyFactory>
 #include <QFile>
+#include <QDir>
 
 #include <qjson/parser.h>
 #include <qjson/qobjecthelper.h>
@@ -221,11 +222,12 @@ void Subsonic::downloadReply()
 	file.close();
 }
 
-void Subsonic::download(MusicObject *song, QString filePath)
+void Subsonic::download(MusicObject *song, QString filePath, QString finalFilePath)
 {   
 	ArgMap args;
 	args["id"] = song->id();
-	QString url = urlBuilder("download", args);
+	//QString url = urlBuilder("download", args);
+	QString url = urlBuilder("stream", args);
 
 	qDebug()<<"downloading: "<<filePath;
 
@@ -235,6 +237,7 @@ void Subsonic::download(MusicObject *song, QString filePath)
 	QNetworkReply *reply = 0;
 	reply = networkAccessManager->get(request);
 	mCurrentDownloadFilename = filePath;
+	mFinalDownloadFilename = finalFilePath;
 
 	connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
 	connect(reply,SIGNAL(readyRead()),this,SLOT(downloadReply()));
@@ -269,8 +272,11 @@ void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString 
 
 void Subsonic::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-	qDebug()<<"downloaded: "<<bytesReceived<<" of "<<bytesTotal;
-	bufferProgress = (bytesTotal / bytesReceived) * 100;
+
+	bufferProgress = ( (double)bytesReceived / (double)bytesTotal ) * 100;
+
+	qDebug()<<"downloaded: "<<bytesReceived<<" of "<<bytesTotal<< " "<<bufferProgress<<"%";
+
 	downloadBufferChanged(bufferProgress);
 }
 
@@ -296,6 +302,8 @@ void Subsonic::downloadFinished()
 
 		return;
 	}
+
+	QDir::home().rename(mCurrentDownloadFilename, mFinalDownloadFilename);
 
 	reply->deleteLater();
 }

@@ -10,6 +10,7 @@ SubsonicModel::SubsonicModel(QObject *parent) :
 	QObject(parent)
 {
 	subsonic = NULL;
+	mSongDownloaded = false;
 }
 
 void SubsonicModel::connect()
@@ -125,7 +126,16 @@ QString SubsonicModel::bufferSong(MusicObject *song)
 {
 	QString filename = QDir::homePath() + "/Music/" + song->title() + ".mp3";
 
-	subsonic->download(song,filename);
+	if(!QFile::exists(filename))
+	{
+		if(QFile::exists(filename+".stream"))
+			QDir::home().remove(filename+".stream");
 
+		subsonic->download(song,filename+".stream",filename);
+		mSongDownloaded = false;
+		return filename+".stream";
+	}
+
+	mSongDownloaded = true;
 	return filename;
 }
