@@ -15,6 +15,7 @@ class Subsonic: public QObject{
 	Q_OBJECT
 	Q_PROPERTY(QString user READ username WRITE setUsername)
 	Q_PROPERTY(QString pass READ pass WRITE setPassword)
+	Q_PROPERTY(int bufferProgress READ getBufferProgress NOTIFY downloadBufferChanged)
 
 public:
 	Subsonic(QString server, QObject * parent = 0);
@@ -41,6 +42,7 @@ public:
 	void download(MusicObject* song, QString filePath);
 	void getRandomSongs(int num=10, QString genre="",QString fromYear="", QString toYear="", QString musicFolderId="");
 //	void stream();
+	int getBufferProgress() { return bufferProgress; }
 
 	QString urlBuilder(QString method,ArgMap args);
 
@@ -48,17 +50,22 @@ signals:
 	void artistsReceived(QList<IndexFolder*> artists);
 	void songsReceived(QList<MusicObject*> songs);
 
+	void downloadBufferChanged(int progress );
+
 private slots:
 	void getMusicFoldersReply();
 	void getMusicDirectoryReply();
 	void getIndexesReply();
 	void downloadReply();
+	void downloadProgress(qint64,qint64);
 
 private:
 	QNetworkAccessManager* networkAccessManager;
 	QString mServer;
 	QString mUsername;
 	QString mPassword;
+
+	int bufferProgress;
 };
 
 #endif // SUBSONIC_H

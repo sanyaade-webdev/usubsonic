@@ -43,6 +43,18 @@ Rectangle {
              playerItem.play();
          }
 
+		 Connections {
+			 target: subsonic
+
+			 onBufferProgressChanged: {
+				 if(subsonic.bufferProgress > 50)
+				 {
+					 playerItem.play();
+				 }
+			 }
+
+		 }
+
          onStatusChanged: {
              if(playerItem.status == Audio.EndOfMedia) {
                  index ++;
@@ -336,7 +348,7 @@ Rectangle {
                 Image {
                     id: bufferProgress
                     anchors.verticalCenter: parent.verticalCenter
-                    width: (parent.width) * playerItem.bufferProgress
+					width: (parent.width) * (subsonic.bufferProgress / 100)
                     source: "progress_filler.png"
                     opacity: 0.25
                     x: 3

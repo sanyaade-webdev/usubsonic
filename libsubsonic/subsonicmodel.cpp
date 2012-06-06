@@ -4,6 +4,7 @@
 
 #include <QtDebug>
 #include <QTimer>
+#include <QDir>
 
 SubsonicModel::SubsonicModel(QObject *parent) :
 	QObject(parent)
@@ -32,6 +33,8 @@ void SubsonicModel::connect()
 			SLOT(artistsReceived(QList<IndexFolder*>)));
 	QObject::connect(subsonic,SIGNAL(songsReceived(QList<MusicObject*>)),this,
 			SLOT(songsReceived(QList<MusicObject*>)));
+	QObject::connect(subsonic,SIGNAL(downloadBufferChanged(int)),this,
+					 SIGNAL(bufferChanged(int)));
 }
 
 void SubsonicModel::getRandomSongs(int num, QString genre, QString fromYear, QString toYear, QString musicFolderId)
@@ -116,4 +119,11 @@ QString SubsonicModel::albumArtUrl(MusicObject *song)
 	}
 
 	return "";
+}
+
+QString SubsonicModel::bufferSong(MusicObject *song)
+{
+	QString filename = QDir::homePath() + "/Music/" + song->title();
+
+	subsonic->download(song,filename);
 }

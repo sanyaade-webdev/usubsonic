@@ -17,6 +17,7 @@ class SubsonicModel : public QObject
 	Q_PROPERTY(QString serverUrl READ serverUrl WRITE setServerUrl)
 	Q_PROPERTY(QString username READ username WRITE setUsername)
 	Q_PROPERTY(QString password READ password WRITE setPassword)
+	Q_PROPERTY(int bufferProgress READ buffer NOTIFY bufferChanged)
 
 public:
 	explicit SubsonicModel(QObject *parent = 0);
@@ -64,12 +65,16 @@ public:
 		settings.setValue("password",v);
 	}
 
+	int buffer() { return subsonic->getBufferProgress(); }
+
 signals:
 	void songsChanged();
 	void indexChanged();
+	void bufferChanged(int);
 
 public slots:
 	void connect();
+	QString bufferSong(MusicObject* song);
 	void getRandomSongs(int num=10, QString genre="", QString fromYear="", QString toYear="", QString musicFolderId="");
 	void getMusicObjectsForId(QString id);
 
@@ -79,13 +84,14 @@ public slots:
 	QString streamUrl(MusicObject* song);
 	QString albumArtUrl(MusicObject* song);
 
-        //void refresh();
+	//void refresh();
 
 private slots:
 
 	void artistsReceived(QList<IndexFolder*> list);
 	void songsReceived(QList<MusicObject*> list);
     void garbageCollect();
+
 private:
 	Subsonic* subsonic;
 	QList<MusicObject*> mSongs;
