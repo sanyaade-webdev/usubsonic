@@ -149,9 +149,9 @@ QString SubsonicModel::bufferSong(MusicObject *song)
 		if(QFile::exists(filename+".stream"))
 			QDir::home().remove(filename+".stream");
 
-		subsonic->download(song,filename+".stream",filename);
+		subsonic->download(song,filename);
 		mSongDownloaded = false;
-		return filename+".stream";
+		return filename;
 	}
 
 	mSongDownloaded = true;

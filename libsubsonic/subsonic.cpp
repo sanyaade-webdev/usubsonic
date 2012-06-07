@@ -240,7 +240,7 @@ void Subsonic::downloadReply()
 	file.close();
 }
 
-void Subsonic::download(MusicObject *song, QString filePath, QString finalFilePath)
+void Subsonic::download(MusicObject *song, QString filePath)
 {   
 	ArgMap args;
 	args["id"] = song->id();
@@ -255,7 +255,11 @@ void Subsonic::download(MusicObject *song, QString filePath, QString finalFilePa
 	QNetworkReply *reply = 0;
 	reply = networkAccessManager->get(request);
 	mCurrentDownloadFilename = filePath;
-	mFinalDownloadFilename = finalFilePath;
+
+	QFile file(filePath + "_incomplete");
+	file.open(QIODevice::Truncate);
+	file.write("incomplete");
+	file.close();
 
 	connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
 	connect(reply,SIGNAL(readyRead()),this,SLOT(downloadReply()));
@@ -290,7 +294,6 @@ void Subsonic::getRandomSongs(int num, QString genre, QString fromYear, QString 
 
 void Subsonic::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-
 	bufferProgress = ( (double)bytesReceived / (double)bytesTotal ) * 100;
 
 	qDebug()<<"downloaded: "<<bytesReceived<<" of "<<bytesTotal<< " "<<bufferProgress<<"%";
@@ -321,7 +324,7 @@ void Subsonic::downloadFinished()
 		return;
 	}
 
-	QDir::home().rename(mCurrentDownloadFilename, mFinalDownloadFilename);
+//	QDir::home().rename(mCurrentDownloadFilename, mFinalDownloadFilename);
 
 	reply->deleteLater();
 }

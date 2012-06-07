@@ -20,18 +20,9 @@ Rectangle {
         Component.onCompleted: {
             subsonic.connect();
         }
-
-		onBufferProgressChanged: {
-            if(subsonic.bufferProgress > 50 && !playerItem.playing)
-			{
-                console.log("50% buffered. now playing?" + playerItem.playing)
-                playerItem.source = playerItem.filename
-				playerItem.play();
-			}
-		}
     }
 
-    Audio {
+    MediaPlayer {
          id: playerItem
          property variant nowPlaying
          property int index: 0
@@ -48,22 +39,13 @@ Rectangle {
              }
 
              var song = songs[index];
-             playerItem.filename = subsonic.bufferSong(song);
-
-             if(subsonic.songDownloaded)
-             {
-                 playerItem.source = playerItem.filename
-                 playerItem.play();
-             }
-
+             playerItem.source = subsonic.streamUrl(song);
              playerItem.nowPlaying = song;
-			 //playerItem.play();
          }
 
-         onStatusChanged: {
-             if(playerItem.status == Audio.EndOfMedia) {
-                 index ++;
-                 playerItem.playSong(index)
+         onMediaStatusChanged: {
+             if(playerItem.status === MediaPlayer.EndOfMedia) {
+                 playerItem.playSong(++index)
              }
          }
     }
@@ -353,7 +335,7 @@ Rectangle {
                 Image {
                     id: bufferProgress
                     anchors.verticalCenter: parent.verticalCenter
-					width: (parent.width) * (subsonic.bufferProgress / 100)
+                    width: (parent.width) * (subsonic.bufferLevel / 100)
                     source: "progress_filler.png"
                     opacity: 0.25
                     x: 3

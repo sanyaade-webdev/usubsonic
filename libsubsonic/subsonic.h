@@ -57,7 +57,7 @@ public:
 //	void getPlaylist();
 //	void createPlaylist();
 //	void deletePlaylist();
-	void download(MusicObject* song, QString filePath, QString finalFilePath);
+	void download(MusicObject* song, QString filePath);
 	void getRandomSongs(int num=10, QString genre="",QString fromYear="", QString toYear="", QString musicFolderId="");
 //	void stream();
 	int getBufferProgress() { return bufferProgress; }
@@ -86,7 +86,6 @@ private:
 
 	int bufferProgress;
 	QString mCurrentDownloadFilename;
-	QString mFinalDownloadFilename;
 };
 
 #endif // SUBSONIC_H

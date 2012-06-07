@@ -1,7 +1,9 @@
 TEMPLATE = lib
 TARGET = subsonic-quick
 QT += declarative network
-CONFIG += qt plugin
+CONFIG += qt plugin mobility
+
+MOBILITY += multimedia
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = org.subsonic
@@ -11,10 +13,12 @@ LIBS += -L../libsubsonic -lsubsonic
 
 # Input
 SOURCES += \
-    subsonic-quick_plugin.cpp
+    subsonic-quick_plugin.cpp \
+    mediaplayer.cpp
 
 HEADERS += \
-    subsonic-quick_plugin.h
+    subsonic-quick_plugin.h \
+    mediaplayer.h
 
 OTHER_FILES = qmldir
 
