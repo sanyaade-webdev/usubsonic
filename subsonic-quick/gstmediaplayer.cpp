@@ -100,6 +100,7 @@ void GstMediaPlayer::setSource(MusicObject* src)
 		mPipeline->setProperty("uri", uri);
 
         quint64 level = (double) (mSource->duration() * 1000000000) * ((double)mBufferFillLevel / 100);
+
 		mPipeline->setProperty("buffer-duration", level);
 	}
 }
@@ -114,6 +115,7 @@ void GstMediaPlayer::onBusMessage(const QGst::MessagePtr &message)
 {
 	if(message->type() == QGst::MessageEos)
 	{
+        qDebug()<<"end of media reached";
 		mMediaState = EndOfMedia;
 		mediaStateChanged();
 		stop();
