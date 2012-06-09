@@ -99,7 +99,7 @@ void GstMediaPlayer::setSource(MusicObject* src)
 	{
 		mPipeline->setProperty("uri", uri);
 
-		quint64 level = (double) (mSource->duration() * 1000 * 1000000) * ((double)mBufferFillLevel / 100);
+        quint64 level = (double) (mSource->duration() * 1000000000) * ((double)mBufferFillLevel / 100);
 		mPipeline->setProperty("buffer-duration", level);
 	}
 }
