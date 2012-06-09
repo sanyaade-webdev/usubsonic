@@ -36,7 +36,7 @@ void SubsonicModel::connect()
 	if(subsonic)
 		delete subsonic;
 
-	QSettings settings;
+	QSettings settings(QDir::homePath()+"/.usubsonic", QSettings::IniFormat);
 
 	QString url = settings.value("serverUrl").toString();
 	QString user = settings.value("username").toString();

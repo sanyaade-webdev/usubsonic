@@ -22,6 +22,7 @@
 #include <QObject>
 #include <QDeclarativeListProperty>
 #include <QSettings>
+#include <QDir>
 
 #include "songobject.h"
 #include "artistfolder.h"
@@ -53,34 +54,34 @@ public:
 
 	QString serverUrl()
 	{
-		QSettings settings;
+		QSettings settings(QDir::homePath()+"/.usubsonic", QSettings::IniFormat);
 		return settings.value("serverUrl").toString();
 	}
 	void setServerUrl(QString v)
 	{
-		QSettings settings;
+		QSettings settings(QDir::homePath()+"/.usubsonic", QSettings::IniFormat);
 		return settings.setValue("serverUrl",v);
 	}
 
 	QString username()
 	{
-		QSettings settings;
+		QSettings settings(QDir::homePath()+"/.usubsonic", QSettings::IniFormat);
 		return settings.value("username").toString();
 	}
 	void setUsername(QString v)
 	{
-		QSettings settings;
+		QSettings settings(QDir::homePath()+"/.usubsonic", QSettings::IniFormat);
 		settings.setValue("username",v);
 	}
 
 	QString password()
 	{
-		QSettings settings;
+		QSettings settings(QDir::homePath()+"/.usubsonic", QSettings::IniFormat);
 		return settings.value("password").toString();
 	}
 	void setPassword(QString v)
 	{
-		QSettings settings;
+		QSettings settings(QDir::homePath()+"/.usubsonic", QSettings::IniFormat);
 		settings.setValue("password",v);
 	}
 
