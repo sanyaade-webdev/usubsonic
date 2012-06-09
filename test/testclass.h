@@ -5,6 +5,7 @@
 
 #include "../libsubsonic/subsonic.h"
 #include "../libsubsonic/artistfolder.h"
+#include "../subsonic-quick/gstmediaplayer.h"
 
 class TestClass : public QObject
 {

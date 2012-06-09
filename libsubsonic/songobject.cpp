@@ -18,7 +18,19 @@
 
 #include "songobject.h"
 
+#include <QMetaProperty>
+#include <QtDebug>
+
 MusicObject::MusicObject(QObject *parent) :
 	QObject(parent)
 {
+}
+
+MusicObject::MusicObject(MusicObject *other)
+{
+	for(int i=0; i<metaObject()->propertyCount(); i++)
+	{
+		qDebug()<<"writing property: "<<i<<" "<<metaObject()->property(i).name();
+		metaObject()->property(i).write(this,other->metaObject()->property(i).read(other));
+	}
 }

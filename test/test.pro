@@ -7,17 +7,24 @@ TARGET = testsubsonic
 DEPENDPATH += .
 INCLUDEPATH += .
 
-QT += network
+QT += network declarative
 CONFIG += link_pkgconfig debug
-PKGCONFIG += QJson
+PKGCONFIG += QJson QtGStreamer-0.10 QtGStreamerUi-0.10 QtGLib-2.0 QtGStreamerUtils-0.10
+
+INCLUDEPATH += ../libsubsonic
 
 # Input
 HEADERS += testclass.h \
            ../libsubsonic/subsonic.h \
            ../libsubsonic/artistfolder.h \
-           ../libsubsonic/songobject.h
+		   ../libsubsonic/songobject.h \
+		   ../subsonic-quick/gstmediaplayer.h \
+		   ../libsubsonic/subsonicmodel.h
+
 SOURCES += main.cpp \
            testclass.cpp \
            ../libsubsonic/subsonic.cpp \
            ../libsubsonic/artistfolder.cpp \
-           ../libsubsonic/songobject.cpp
+		   ../libsubsonic/songobject.cpp \
+		   ../subsonic-quick/gstmediaplayer.cpp \
+		   ../libsubsonic/subsonicmodel.cpp

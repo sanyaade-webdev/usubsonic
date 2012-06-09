@@ -44,7 +44,7 @@ private: //methods
 	void pauseAuto();
 
 private:
-	QBuffer* stream;
+	QIODevice* stream;
 	QString mSource;
 	QNetworkAccessManager* nm;
 	quint8 mBufferFillLevel;

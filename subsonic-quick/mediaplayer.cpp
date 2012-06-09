@@ -7,7 +7,11 @@ MediaPlayer::MediaPlayer(QObject *parent) :
 	QMediaPlayer(parent)
 {
 	nm = new QNetworkAccessManager(this);
-	stream = NULL;
+
+	stream = new QBuffer();
+	stream->open(QIODevice::ReadWrite);
+
+	setMedia(QMediaContent(), stream);
 
 	mBufferFillLevel = 20;
 
@@ -24,16 +28,11 @@ void MediaPlayer::setSource(QString url)
 	QNetworkReply *reply = 0;
 	reply = nm->get(request);
 
-	if(stream != NULL)
+	/*if(stream != NULL)
 	{
 		stream->close();
 		stream->deleteLater();
-	}
-
-	stream = new QBuffer;
-	stream->open(QIODevice::ReadWrite);
-	//setMedia(QMediaContent(), stream);
-	setMedia(QMediaContent(QUrl(url)));
+	}*/
 
 	connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 	connect(reply, SIGNAL(readyRead()), this, SLOT(readyRead()));
@@ -72,9 +71,7 @@ void MediaPlayer::readyRead()
 
 	QByteArray data = reply->readAll();
 
-	stream->write(data);
-
-	qDebug()<<"writing "<<data.count()<<" bytes";
+	qDebug()<<"writing "<<stream->write(data)<<" bytes";
 	qDebug()<<stream->bytesAvailable()<<" bytes available to read";
 }
 

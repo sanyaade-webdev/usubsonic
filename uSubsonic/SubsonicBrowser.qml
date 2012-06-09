@@ -24,6 +24,8 @@ Rectangle {
 
     MediaPlayer {
          id: playerItem
+         subsonicModel: subsonic
+         bufferFillLevel: 20
          property variant nowPlaying
          property int index: 0
          property string filename:""
@@ -39,12 +41,16 @@ Rectangle {
              }
 
              var song = songs[index];
-             playerItem.source = subsonic.streamUrl(song);
+             playerItem.source = song;
              playerItem.nowPlaying = song;
+             playerItem.play();
          }
 
-         onMediaStatusChanged: {
-             if(playerItem.status === MediaPlayer.EndOfMedia) {
+         onMediaStateChanged: {
+             console.log("Media status: " + playerItem.mediaState)
+
+             if(playerItem.mediaState === MediaPlayer.EndOfMedia) {
+                 console.log("EOS.  Playing next song...")
                  playerItem.playSong(++index)
              }
          }
@@ -294,13 +300,13 @@ Rectangle {
             Image {
                 id: playPauseButton
 
-                source: playerItem.paused || !playerItem.playing ? "media_play.png":"pause.png"
+                source: playerItem.playerState === MediaPlayer.Paused || playerItem.playerState !== MediaPlayer.Playing ? "media_play.png":"pause.png"
                 y: 5
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if(!playerItem.paused)
+                        if(playerItem.playerState !== MediaPlayer.Paused)
                             playerItem.pause();
                         else playerItem.play();
                     }
@@ -335,13 +341,13 @@ Rectangle {
                 Image {
                     id: bufferProgress
                     anchors.verticalCenter: parent.verticalCenter
-                    width: (parent.width) * (subsonic.bufferLevel / 100)
+                    width: (parent.width) * (playerItem.bufferLevel / 100)
                     source: "progress_filler.png"
                     opacity: 0.25
                     x: 3
 
                     Behavior on width {
-                        NumberAnimation { duration: 500 }
+                        NumberAnimation { duration: 1100 }
                     }
 
                 }

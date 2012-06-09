@@ -18,7 +18,7 @@
 
 #include "subsonic-quick_plugin.h"
 #include "subsonicmodel.h"
-#include "mediaplayer.h"
+#include "gstmediaplayer.h"
 
 #include <QtDeclarative/qdeclarative.h>
 
@@ -28,7 +28,7 @@ void Subsonic_QuickPlugin::registerTypes(const char *uri)
 	qmlRegisterType<SubsonicModel>(uri, 1, 0, "SubsonicModel");
 	qmlRegisterUncreatableType<IndexFolder>(uri, 1, 0, "IndexFolder", "This type is uncreatable");
 	qmlRegisterUncreatableType<MusicObject>(uri, 1, 0, "MusicObject", "This type is uncreatable");
-	qmlRegisterType<MediaPlayer>(uri, 1, 0, "MediaPlayer");
+	qmlRegisterType<GstMediaPlayer>(uri, 1, 0, "MediaPlayer");
 }
 
 Q_EXPORT_PLUGIN2(Subsonic_Quick, Subsonic_QuickPlugin)

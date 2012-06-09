@@ -33,5 +33,14 @@ void TestClass::songsUpdated(QList<MusicObject *> songs)
 	qDebug()<<"title: "<<songs[0]->title();
 	qDebug()<<"id: "<<songs[0]->id();
 
-	subsonic->download(songs[0],songs[0]->id() + ".mp3");
+	//subsonic->download(songs[0],songs[0]->id() + ".mp3");
+
+	GstMediaPlayer *player = new GstMediaPlayer(this);
+	//player->setSubsonicModel(subsonic);
+
+	ArgMap args;
+	args["id"]=songs[0]->id();
+
+	player->setSource(songs[0]);
+	player->play();
 }

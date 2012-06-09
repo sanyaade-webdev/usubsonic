@@ -41,8 +41,8 @@ class MusicObject : public QObject
 	AUTOPROPERTY(QString, contentType, ContentType)
 	Q_PROPERTY(QString coverArt READ coverArt WRITE setCoverArt )
 	AUTOPROPERTY(QString, coverArt, CoverArt)
-	Q_PROPERTY(int duration READ duration WRITE setDuration )
-	AUTOPROPERTY(int, duration, Duration)
+	Q_PROPERTY(quint64 duration READ duration WRITE setDuration )
+	AUTOPROPERTY(quint64, duration, Duration)
 	Q_PROPERTY(QString genre READ genre WRITE setGenre )
 	AUTOPROPERTY(QString, genre, Genre)
 	Q_PROPERTY(QString id READ id WRITE setId )
@@ -66,10 +66,8 @@ class MusicObject : public QObject
 
 public:
 	explicit MusicObject(QObject *parent = 0);
+	MusicObject(MusicObject* other);
 
-signals:
-	
-public slots:
 	
 };
 
