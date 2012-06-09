@@ -2,7 +2,6 @@ import QtQuick 1.1
 import org.subsonic 1.0
 import QtMultimediaKit 1.1
 import Qt.labs.particles 1.0
-import Qt.labs.gestures 1.0
 
 Rectangle {
     id: container
@@ -26,7 +25,7 @@ Rectangle {
     MediaPlayer {
          id: playerItem
          subsonicModel: subsonic
-         bufferFillLevel: 10
+         bufferFillLevel: 20
          property variant nowPlaying
          property int index: 0
          property string filename:""
@@ -115,9 +114,9 @@ Rectangle {
                     }
                 }
 
-                GestureArea {
+                MouseArea {
                     anchors.fill: parent
-                    onTap: {
+                    onClicked: {
                         if(modelData.name || modelData.isDir) {
                             subsonic.getMusicObjectsForId(modelData.id)
                         }
@@ -278,9 +277,9 @@ Rectangle {
                     source: "back.png"
                 }
 
-                GestureArea {
+                MouseArea {
                     anchors.fill: parent
-                    onTap: musicList.songs = false
+                    onClicked: musicList.songs = false
                 }
             }
 
@@ -290,9 +289,9 @@ Rectangle {
                 source: "media_prev.png"
                 anchors.verticalCenter: playPauseButton.verticalCenter
 
-                GestureArea {
+                MouseArea {
                     anchors.fill: parent
-                    onTap: {
+                    onClicked: {
                         playerItem.playSong(playerItem.index-1)
                     }
                 }
@@ -304,9 +303,9 @@ Rectangle {
                 source: playerItem.playerState === MediaPlayer.Paused || playerItem.playerState !== MediaPlayer.Playing ? "media_play.png":"pause.png"
                 y: 5
 
-                GestureArea {
+                MouseArea {
                     anchors.fill: parent
-                    onTap: {
+                    onClicked: {
                         if(playerItem.playerState !== MediaPlayer.Paused)
                             playerItem.pause();
                         else playerItem.play();
@@ -320,9 +319,9 @@ Rectangle {
                 source: "media_next.png"
                 anchors.verticalCenter: playPauseButton.verticalCenter
 
-                GestureArea {
+                MouseArea {
                     anchors.fill: parent
-                    onTap: {
+                    onClicked: {
                         playerItem.playSong(playerItem.index+1)
                     }
                 }
@@ -378,9 +377,9 @@ Rectangle {
                     source: "configure.png"
                 }
 
-                GestureArea {
+                MouseArea {
                     anchors.fill: parent
-                    onTap: toolBox.visible = true
+                    onClicked: toolBox.visible = true
                 }
             }
 
@@ -396,9 +395,9 @@ Rectangle {
             id: fog;
             anchors.fill: parent;
             opacity: 0.25;
-            GestureArea {
+            MouseArea {
                 anchors.fill: parent;
-                onTap:  {
+                onClicked:  {
                     subsonic.connect();
                     toolBox.visible = false;
                 }
