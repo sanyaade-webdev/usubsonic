@@ -41,8 +41,8 @@ Rectangle {
              }
 
              var song = songs[index];
-             playerItem.source = song;
              playerItem.nowPlaying = song;
+             playerItem.source = song;
              playerItem.play();
          }
 
@@ -356,7 +356,7 @@ Rectangle {
                     id: progress
                     anchors.verticalCenter: parent.verticalCenter
                     x: 3
-                    width: (parent.width) * (playerItem.position / playerItem.duration)
+                    width: playerItem.duration ? (parent.width) * (playerItem.position / playerItem.duration):0
                     source: "progress_filler.png"
 
                     Behavior on width {

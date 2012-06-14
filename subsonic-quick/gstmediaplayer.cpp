@@ -10,6 +10,7 @@
 #include <QGst/Query>
 
 #include <QApplication>
+#include <QMetaMethod>
 
 GstMediaPlayer::GstMediaPlayer(QObject *parent) :
 	QObject(parent)
@@ -18,6 +19,8 @@ GstMediaPlayer::GstMediaPlayer(QObject *parent) :
 	bufferLevel = 0;
 	mPosition = 0;
 	mDuration = 0;
+	QMetaObject::invokeMethod(this, "positionChanged", Qt::QueuedConnection);
+	QMetaObject::invokeMethod(this, "durationChanged", Qt::QueuedConnection);
 	manualPause = false;
 
 	int argc = QApplication::argc();
@@ -39,21 +42,28 @@ GstMediaPlayer::GstMediaPlayer(QObject *parent) :
 		//
 		QGst::ElementPtr myEqualizer = QGst::ElementFactory::make("equalizer-10bands");
 		if(!myEqualizer)
-		{   qFatal("Failed to create equalizer-10bands");   }
+		{
+			qFatal("Failed to create equalizer-10bands");
+		}
+
 		QGst::PadPtr padEqSink = myEqualizer->getStaticPad("sink");
 		QGst::PadPtr padEqSrc = myEqualizer->getStaticPad("src");
 
 		QGst::ElementPtr myVolume = QGst::ElementFactory::make("volume");
 		if(!myVolume)
 		{
-			qFatal("Failed to create volume");              }
+			qFatal("Failed to create volume");
+		}
+
 		myVolume->setProperty("volume", 0.5);
 		QGst::PadPtr padVolSink = myVolume->getStaticPad("sink");
 		QGst::PadPtr padVolSrc = myVolume->getStaticPad("src");
 
 		QGst::ElementPtr myAutoAudioSink = QGst::ElementFactory::make("autoaudiosink");
 		if(!myAutoAudioSink)
-		{   qFatal("Failed to create autoaudiosink");       }
+		{
+			qFatal("Failed to create autoaudiosink");
+		}
 		QGst::PadPtr padAudioSink = myAutoAudioSink->getStaticPad("sink");
 
 		myBin->add(myEqualizer);
@@ -81,9 +91,18 @@ GstMediaPlayer::GstMediaPlayer(QObject *parent) :
 
 void GstMediaPlayer::setSource(MusicObject* src)
 {
+
+	stop();
+
 	if(mSource) mSource->deleteLater();
 
 	mSource = new MusicObject(src);
+
+	mDuration = mSource->duration() * 1000;
+	durationChanged();
+
+	mPosition = 0;
+	positionChanged();
 
 	if(!m_subsonicModel)
 	{
@@ -99,7 +118,7 @@ void GstMediaPlayer::setSource(MusicObject* src)
 	{
 		mPipeline->setProperty("uri", uri);
 
-        quint64 level = (double) (mSource->duration() * 1000000000) * ((double)mBufferFillLevel / 100);
+		quint64 level = (double) (mSource->duration() * 1000000000) * ((double)mBufferFillLevel / 100);
 		mPipeline->setProperty("buffer-duration", level);
 	}
 }
@@ -114,9 +133,10 @@ void GstMediaPlayer::onBusMessage(const QGst::MessagePtr &message)
 {
 	if(message->type() == QGst::MessageEos)
 	{
+		//stop();
 		mMediaState = EndOfMedia;
 		mediaStateChanged();
-		stop();
+
 	}
 	else if(message->type() == QGst::MessageBuffering)
 	{
@@ -150,9 +170,9 @@ void GstMediaPlayer::onBusMessage(const QGst::MessagePtr &message)
 	}
 	else if(message->type() == QGst::MessageDuration)
 	{
-		mDuration = message.staticCast<QGst::DurationMessage>()->duration() / 1000000;
+		//mDuration = message.staticCast<QGst::DurationMessage>()->duration() / 1000000;
 		qDebug()<<"message duration: "<<mDuration;
-		durationChanged();
+		//durationChanged();
 
 	}
 	else if(message->type() == QGst::MessageSegmentDone)
@@ -193,9 +213,10 @@ void GstMediaPlayer::onBusMessage(const QGst::MessagePtr &message)
 			}
 		}
 
-		else
+		else if(state == QGst::StateNull)
 		{
 			timer.stop();
+			mPlayerState = Stopped;
 		}
 	}
 	else if(message->type() == QGst::MessageError)
@@ -204,6 +225,14 @@ void GstMediaPlayer::onBusMessage(const QGst::MessagePtr &message)
 		mMediaState = Error;
 		mediaStateChanged();
 		stop();
+	}
+	else if(message->type() == QGst::MessageTag)
+	{
+		qDebug()<<"Tag message";
+
+		QGst::TagMessagePtr tag = message.staticCast<QGst::TagMessage>();
+
+		qDebug()<<"bitrate: "<<tag->taglist().bitrate();
 	}
 	else
 	{
@@ -244,6 +273,7 @@ void GstMediaPlayer::checkTime()
 	if(mPipeline->query(pos))
 	{
 		mPosition = pos->position() / 1000000;
+		//qDebug()<<"position changed: "<<mPosition<<" of "<<mDuration;
 		positionChanged();
 	}
 }

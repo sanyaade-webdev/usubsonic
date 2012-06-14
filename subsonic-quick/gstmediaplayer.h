@@ -78,6 +78,7 @@ private: //methods
 
 private:
 	QGst::PipelinePtr mPipeline;
+
 	int mBufferFillLevel;
 	int bufferLevel;
 
